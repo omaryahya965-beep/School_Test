@@ -72,14 +72,12 @@ scool/
 ### 1. Prerequisites
 
 - Node.js 20+
-- A PostgreSQL database (e.g. [Neon](https://neon.tech), or local Postgres)
 
 ### 2. Backend setup
 
 ```bash
 cd backend
 npm install
-cp .env.example .env    # then fill in DATABASE_URL, JWT_SECRET, JWT_REFRESH_SECRET, ...
 npm run prisma:generate
 npx prisma db push
 npm run dev              # http://localhost:3001
@@ -90,30 +88,8 @@ npm run dev              # http://localhost:3001
 ```bash
 cd frontend
 npm install
-cp .env.local.example .env.local   # then fill in NEXT_PUBLIC_API_URL, Supabase keys, ...
 npm run dev               # http://localhost:3000
 ```
-
-## ⚙️ Environment Variables
-
-**`backend/.env`**
-
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
-| `JWT_SECRET` / `JWT_REFRESH_SECRET` | Secrets for signing access/refresh tokens (must be non-default, 16+ chars in production) |
-| `JWT_EXPIRES_IN` / `JWT_REFRESH_EXPIRES_IN` | Token lifetimes (e.g. `15m`, `7d`) |
-| `CORS_ORIGIN` | Allowed frontend origin |
-| `STORAGE_PROVIDER` | `local` or `s3` for file uploads |
-
-**`frontend/.env.local`**
-
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | Backend API base URL (e.g. `http://localhost:3001/api`) |
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase project credentials |
-
-> Neither `.env` file is committed — see `.gitignore`.
 
 ## 🧪 Useful Scripts
 
