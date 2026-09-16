@@ -39,20 +39,25 @@ app.get("/health", (req, res) => {
 // Global error handler (must be last)
 app.use(globalErrorHandler);
 
-// Start server
-app.listen(env.PORT, () => {
-  console.log(`[Server] Running at ${env.BACKEND_URL}`);
-  console.log(`[Server] Environment: ${env.NODE_ENV}`);
-  console.log(`[Server] CORS origin: ${env.CORS_ORIGIN}`);
-  
-  // Database pre-heating / connection warmup
-  console.log("[Server] Pre-heating database connection pool...");
-  prisma.$queryRaw`SELECT 1`
-    .then(() => {
-      console.log("[Server] Database connection pool pre-heated successfully!");
-    })
-    .catch((err) => {
-      console.error("[Server] Database pre-heating failed:", err);
-    });
-});
+// On Vercel the app runs as a serverless function (see api/index.ts) and must not
+// bind to a port itself — Vercel's runtime handles the HTTP listener.
+if (!process.env.VERCEL) {
+  app.listen(env.PORT, () => {
+    console.log(`[Server] Running at ${env.BACKEND_URL}`);
+    console.log(`[Server] Environment: ${env.NODE_ENV}`);
+    console.log(`[Server] CORS origin: ${env.CORS_ORIGIN}`);
+
+    // Database pre-heating / connection warmup
+    console.log("[Server] Pre-heating database connection pool...");
+    prisma.$queryRaw`SELECT 1`
+      .then(() => {
+        console.log("[Server] Database connection pool pre-heated successfully!");
+      })
+      .catch((err) => {
+        console.error("[Server] Database pre-heating failed:", err);
+      });
+  });
+}
+
+export default app;
 

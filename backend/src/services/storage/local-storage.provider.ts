@@ -5,7 +5,11 @@ import { env } from "../../config/env";
 import { logError } from "../../utils/logger";
 
 export class LocalStorageProvider implements StorageProvider {
-  private uploadDir = path.join(__dirname, "../../../../uploads");
+  // On Vercel only /tmp is writable, and it doesn't persist between invocations —
+  // this keeps the server from crashing there, but real uploads need STORAGE_PROVIDER=s3 in production.
+  private uploadDir = process.env.VERCEL
+    ? path.join("/tmp", "uploads")
+    : path.join(__dirname, "../../../../uploads");
 
   constructor() {
     if (!fs.existsSync(this.uploadDir)) {
