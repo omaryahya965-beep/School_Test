@@ -41,7 +41,7 @@ class AuthService {
                 name,
                 email,
                 password: hashedPassword,
-                role: role || "teacher",
+                role: role || "admin",
             },
         });
         const tokenPayload = {

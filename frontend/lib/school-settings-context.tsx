@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react"
+import { useLanguage } from "@/lib/i18n/context"
 
 const STORAGE_KEY = "settings_schoolName"
 const DEFAULT_AR  = "مدرسة كفر عقب الأساسية المختلطة"
@@ -12,18 +13,22 @@ interface SchoolSettingsCtx {
 }
 
 const SchoolSettingsContext = createContext<SchoolSettingsCtx>({
-  schoolName: DEFAULT_EN,
+  schoolName: DEFAULT_AR,
   setSchoolName: () => {},
 })
 
 export function SchoolSettingsProvider({ children }: { children: ReactNode }) {
-  const [schoolName, setSchoolNameState] = useState<string>(() => {
-    if (typeof window === "undefined") return DEFAULT_EN
-    return localStorage.getItem(STORAGE_KEY) ?? DEFAULT_EN
+  const { language } = useLanguage()
+  // Only a value the user explicitly typed overrides the language-based default
+  const [customName, setCustomName] = useState<string | null>(() => {
+    if (typeof window === "undefined") return null
+    return localStorage.getItem(STORAGE_KEY)
   })
 
+  const schoolName = customName ?? (language === "ar" ? DEFAULT_AR : DEFAULT_EN)
+
   const setSchoolName = useCallback((name: string) => {
-    setSchoolNameState(name)
+    setCustomName(name)
     if (typeof window !== "undefined") {
       localStorage.setItem(STORAGE_KEY, name)
       window.dispatchEvent(new StorageEvent("storage", { key: STORAGE_KEY, newValue: name }))
@@ -33,7 +38,7 @@ export function SchoolSettingsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     function onStorage(e: StorageEvent) {
       if (e.key === STORAGE_KEY && e.newValue !== null) {
-        setSchoolNameState(e.newValue)
+        setCustomName(e.newValue)
       }
     }
     window.addEventListener("storage", onStorage)

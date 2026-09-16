@@ -19,7 +19,7 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null)
 
-const defaultConfig: ThemeConfig = { color: "violet", mode: "light" }
+const defaultConfig: ThemeConfig = { color: "ocean", mode: "light" }
 
 export function AppThemeProvider({ children }: { children: React.ReactNode }) {
   const [config, setConfig] = useState<ThemeConfig>(defaultConfig)

@@ -59,8 +59,8 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ar" dir="rtl">
-      <body className={`${ibmPlexArabic.variable} font-sans antialiased bg-background min-h-screen`}>
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <body className={`${ibmPlexArabic.variable} font-sans antialiased bg-background min-h-screen`} suppressHydrationWarning>
         <QueryProvider>
           <AppThemeProvider>
             <LanguageProvider>

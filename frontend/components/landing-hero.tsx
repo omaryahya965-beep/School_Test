@@ -18,6 +18,7 @@ import {
 } from "@/lib/hooks/use-public-data"
 import { motion, AnimatePresence, type Variants } from "framer-motion"
 import { grades, subjects } from "@/components/landing/landing-constants"
+import { useLanguage } from "@/lib/i18n/context"
 
 
 
@@ -53,15 +54,17 @@ function FileTypeIcon({ type }: { type: SubjectFile["type"] }) {
 }
 
 function FileTypeLabel({ type }: { type: SubjectFile["type"] }) {
+  const { language } = useLanguage()
+  const ls = landingStrings[language]
   switch (type) {
     case "pdf":
-      return "PDF"
+      return ls.pdf
     case "image":
-      return "صورة"
+      return ls.image
     case "link":
-      return "رابط"
+      return ls.link
     default:
-      return "مستند"
+      return ls.other
   }
 }
 
@@ -80,18 +83,150 @@ const itemVariants: Variants = {
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 15 } }
 }
 
+// English name overrides, index-aligned with grades/subjects in landing-constants.ts
+const gradeNamesEn = ["1st Grade", "2nd Grade", "3rd Grade", "4th Grade", "5th Grade", "6th Grade", "7th Grade", "8th Grade", "9th Grade"]
+const gradeDescEn = ["Starting the journey", "New discoveries", "Steady progress", "Fun science", "Deeper knowledge", "Structured prep", "A new stage", "Notable progress", "Final achievement"]
+const subjectNamesEn = ["Arabic Language", "English Language", "Mathematics", "Science & Life", "Religious Education", "Social Studies", "Technology"]
+const subjectDescEn = ["Our beautiful language", "English Language", "Numbers & calculation", "Discovering science", "Religious education", "History & geography", "World of technology"]
+const dayNamesEn = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+const landingStrings = {
+  ar: {
+    subLogo: "الأساسية المختلطة",
+    adminLogin: "دخول الإدارة",
+    officialSite: "الموقع الرسمي للمدرسة",
+    heroTitle1: "نحن نُشكّل الجيل القادم",
+    heroDesc: "مؤسسة تعليمية حكومية راسخة تسعى إلى بناء شخصية متكاملة لكل طالب، وتهيئة بيئة محفزة تجمع بين الأصالة والتقدم التكنولوجي في قلب كفر عقب.",
+    stat1: "9 صفوف دراسية",
+    stat2: "7 مواد أساسية",
+    stat3: "بيئة ذكية متكاملة",
+    breadcrumbGrades: "الصفوف الدراسية",
+    semesterFirst: "الفصل الأول",
+    semesterSecond: "الفصل الثاني",
+    semesterFullFirst: "الفصل الدراسي الأول",
+    semesterFullSecond: "الفصل الدراسي الثاني",
+    featuresLabel: "مميزاتنا",
+    whyUs: (name: string) => `لماذا ${name}؟`,
+    whyUsDesc: "نوفر بيئة تعليمية متكاملة تجمع بين التقنية الحديثة والتعليم الأصيل",
+    features: [
+      { emoji: "📚", title: "مناهج متكاملة", desc: "محتوى تعليمي شامل من الصف الأول حتى التاسع وفق المناهج الوطنية المعتمدة" },
+      { emoji: "📅", title: "جداول دراسية منظمة", desc: "جداول حصص أسبوعية دقيقة ومحدّثة لكل صف دراسي بشكل مستمر" },
+      { emoji: "👨‍🏫", title: "كادر تعليمي متميز", desc: "معلمون مؤهلون ومتخصصون في تقديم التعليم الحديث وتنمية مهارات الطلاب" },
+      { emoji: "📁", title: "مكتبة رقمية", desc: "ملفات دراسية ومقررات وأوراق عمل متاحة لكل طالب في أي وقت ومكان" },
+      { emoji: "🏆", title: "بيئة آمنة ومحفزة", desc: "بيئة مدرسية تدعم النمو الأكاديمي والاجتماعي لكل طالب بشكل فردي" },
+      { emoji: "🔗", title: "تواصل مستمر", desc: "نظام متكامل لمتابعة تقدم الطلاب وتواصل أولياء الأمور مع الكادر التعليمي" },
+    ],
+    browseSubjects: "تصفح المواد الدراسية",
+    browseSubjectsDesc: "اختر صفك الدراسي للاطلاع على المقررات والجداول والملفات",
+    startNow: "ابدأ الآن",
+    chooseSemester: "اختر الفصل الدراسي",
+    chooseSemesterDesc: "تصفح المواد الدراسية والجداول المخصصة لكل فصل",
+    semFirstPeriod: "سبتمبر - يناير",
+    semSecondPeriod: "فبراير - يونيو",
+    semFirstFeatures: ["مناهج الفصل الأول", "جدول الحصص الأسبوعي", "ملخصات دراسية شاملة"],
+    semSecondFeatures: ["مناهج الفصل الثاني", "تحديثات الجدول المدرسي", "أوراق عمل ومراجعات نهائية"],
+    viewSubjectsSchedule: "عرض المواد والجدول",
+    weeklySchedule: (grade: string) => `جدول الحصص الأسبوعي (${grade})`,
+    semesterLabel: (sem: string) => `الفصل الدراسي ${sem}`,
+    dayPeriod: "اليوم / الحصة",
+    noGradeDefined: "لا يوجد صف دراسي معرّف حالياً لهذا المستوى",
+    noScheduleYet: "لم يتم إدخال جدول الحصص لهذا الفصل بعد",
+    lessonsCount: (n: number) => `${n} حصص`,
+    educationalSubjects: "المواد التعليمية",
+    subjectsOf: (grade: string) => `مواد ${grade}`,
+    browseFiles: "تصفح الملفات",
+    semesterShort: (sem: string) => `الفصل ${sem}`,
+    noFiles: "لا توجد ملفات حالياً",
+    noFilesDesc: "لم يقم معلم المادة برفع أي أوراق عمل أو ملفات لهذا الفصل بعد. سيتم توفيرها قريباً.",
+    filesAndAttachments: (n: number) => `الملفات والمرفقات (${n})`,
+    clickToDownload: "انقر على الملف لتحميله أو فتحه",
+    schoolInfo: "معلومات المدرسة",
+    schoolInfoDesc: "مؤسسة تعليمية حكومية تخدم أبناء المنطقة منذ سنوات",
+    infoCards: [
+      { title: "الموقع", value: "كفر عقب — القدس", sub: "الضفة الغربية" },
+      { title: "للتواصل", value: "02-234-5678", sub: "أوقات الدوام" },
+      { title: "المراحل الدراسية", value: "الصف الأول — التاسع", sub: "9 صفوف دراسية" },
+      { title: "الدوام المدرسي", value: "الأحد — الخميس", sub: "08:00 صباحاً — 02:00 م" },
+    ],
+    footerRights: (name: string) => `جميع الحقوق محفوظة © 2026 — ${name}`,
+    footerTagline: "نظام الإدارة والتعليم الذكي",
+    pdf: "PDF", image: "صورة", link: "رابط", other: "مستند",
+  },
+  en: {
+    subLogo: "Basic Mixed School",
+    adminLogin: "Admin Login",
+    officialSite: "The school's official website",
+    heroTitle1: "We shape the next generation",
+    heroDesc: "An established public educational institution that seeks to build a well-rounded character for every student, fostering an inspiring environment that combines authenticity with technological progress in the heart of Kafr Aqab.",
+    stat1: "9 grade levels",
+    stat2: "7 core subjects",
+    stat3: "Smart integrated environment",
+    breadcrumbGrades: "Grade Levels",
+    semesterFirst: "First Semester",
+    semesterSecond: "Second Semester",
+    semesterFullFirst: "First Semester",
+    semesterFullSecond: "Second Semester",
+    featuresLabel: "Our Features",
+    whyUs: (name: string) => `Why ${name}?`,
+    whyUsDesc: "We provide an integrated educational environment combining modern technology with authentic education",
+    features: [
+      { emoji: "📚", title: "Integrated Curricula", desc: "Comprehensive educational content from 1st to 9th grade following the approved national curricula" },
+      { emoji: "📅", title: "Organized Schedules", desc: "Accurate weekly class schedules, continuously updated for every grade" },
+      { emoji: "👨‍🏫", title: "Distinguished Teaching Staff", desc: "Qualified teachers specialized in delivering modern education and developing students' skills" },
+      { emoji: "📁", title: "Digital Library", desc: "Study files, materials and worksheets available to every student anytime, anywhere" },
+      { emoji: "🏆", title: "Safe & Motivating Environment", desc: "A school environment that supports each student's academic and social growth individually" },
+      { emoji: "🔗", title: "Continuous Communication", desc: "An integrated system for tracking student progress and connecting parents with the teaching staff" },
+    ],
+    browseSubjects: "Browse Subjects",
+    browseSubjectsDesc: "Choose your grade to view courses, schedules and files",
+    startNow: "Start Now",
+    chooseSemester: "Choose the Semester",
+    chooseSemesterDesc: "Browse the subjects and schedules for each semester",
+    semFirstPeriod: "September - January",
+    semSecondPeriod: "February - June",
+    semFirstFeatures: ["First semester curricula", "Weekly class schedule", "Comprehensive study summaries"],
+    semSecondFeatures: ["Second semester curricula", "School schedule updates", "Worksheets and final reviews"],
+    viewSubjectsSchedule: "View subjects & schedule",
+    weeklySchedule: (grade: string) => `Weekly Class Schedule (${grade})`,
+    semesterLabel: (sem: string) => `${sem} Semester`,
+    dayPeriod: "Day / Period",
+    noGradeDefined: "No grade level is currently defined for this level",
+    noScheduleYet: "The class schedule for this semester hasn't been entered yet",
+    lessonsCount: (n: number) => `${n} lessons`,
+    educationalSubjects: "Subjects",
+    subjectsOf: (grade: string) => `${grade} Subjects`,
+    browseFiles: "Browse files",
+    semesterShort: (sem: string) => `${sem} Semester`,
+    noFiles: "No files currently available",
+    noFilesDesc: "The subject teacher hasn't uploaded any worksheets or files for this semester yet. They will be available soon.",
+    filesAndAttachments: (n: number) => `Files & attachments (${n})`,
+    clickToDownload: "Click a file to download or open it",
+    schoolInfo: "School Information",
+    schoolInfoDesc: "A public educational institution serving the local community for years",
+    infoCards: [
+      { title: "Location", value: "Kafr Aqab — Jerusalem", sub: "West Bank" },
+      { title: "Contact", value: "02-234-5678", sub: "Working hours" },
+      { title: "Grade Levels", value: "1st Grade — 9th Grade", sub: "9 grade levels" },
+      { title: "School Hours", value: "Sunday — Thursday", sub: "08:00 AM — 02:00 PM" },
+    ],
+    footerRights: (name: string) => `All rights reserved © 2026 — ${name}`,
+    footerTagline: "Smart Management & Education System",
+    pdf: "PDF", image: "Image", link: "Link", other: "Document",
+  },
+} as const
+
 export default function LandingHero() {
   const { schoolName } = useSchoolName()
-  const { config, isDark } = useAppTheme()
+  const { isDark } = useAppTheme()
+  const { language, setLanguage } = useLanguage()
+  const ls = landingStrings[language]
+  const dir = language === "ar" ? "rtl" : "ltr"
+  const gradesT = grades.map((g, i) => ({ ...g, name: language === "ar" ? g.name : gradeNamesEn[i], desc: language === "ar" ? g.desc : gradeDescEn[i] }))
+  const subjectsT = subjects.map((s, i) => ({ ...s, name: language === "ar" ? s.name : subjectNamesEn[i], desc: language === "ar" ? s.desc : subjectDescEn[i] }))
 
-  // Theme accent color palette
-  const tc = {
-    ocean:   { from: "from-blue-500",   via: "via-sky-500",   to: "to-cyan-500",    btnTo: "to-blue-600",   bg500: "bg-blue-500",   text: "text-blue-600",   textLight: "text-blue-400",   bg50: "bg-blue-50",   bg100: "bg-blue-100",   border: "border-blue-100",   border200: "border-blue-200",   shadow: "shadow-blue-300",   glow: "bg-blue-300",   ring: "ring-blue-500" },
-    violet:  { from: "from-violet-500", via: "via-purple-500", to: "to-fuchsia-500", btnTo: "to-violet-600", bg500: "bg-violet-500", text: "text-violet-600", textLight: "text-violet-400", bg50: "bg-violet-50", bg100: "bg-violet-100", border: "border-violet-100", border200: "border-violet-200", shadow: "shadow-violet-300", glow: "bg-violet-300",   ring: "ring-violet-500" },
-    emerald: { from: "from-emerald-500", via: "via-teal-500", to: "to-cyan-500",    btnTo: "to-emerald-600", bg500: "bg-emerald-500", text: "text-emerald-600", textLight: "text-emerald-400", bg50: "bg-emerald-50", bg100: "bg-emerald-100", border: "border-emerald-100", border200: "border-emerald-200", shadow: "shadow-emerald-300", glow: "bg-emerald-300", ring: "ring-emerald-500" },
-    rose:    { from: "from-rose-500",   via: "via-pink-500",  to: "to-fuchsia-500", btnTo: "to-rose-600",   bg500: "bg-rose-500",   text: "text-rose-600",   textLight: "text-rose-400",   bg50: "bg-rose-50",   bg100: "bg-rose-100",   border: "border-rose-100",   border200: "border-rose-200",   shadow: "shadow-rose-300",   glow: "bg-rose-300",   ring: "ring-rose-500" },
-    amber:   { from: "from-amber-500",  via: "via-orange-500", to: "to-yellow-500", btnTo: "to-amber-600",  bg500: "bg-amber-500",  text: "text-amber-600",  textLight: "text-amber-400",  bg50: "bg-amber-50",  bg100: "bg-amber-100",  border: "border-amber-100",  border200: "border-amber-200",  shadow: "shadow-amber-300",  glow: "bg-amber-300",  ring: "ring-amber-500" },
-  }[config.color] || { from: "from-blue-500", via: "via-sky-500", to: "to-cyan-500", btnTo: "to-blue-600", bg500: "bg-blue-500", text: "text-blue-600", textLight: "text-blue-400", bg50: "bg-blue-50", bg100: "bg-blue-100", border: "border-blue-100", border200: "border-blue-200", shadow: "shadow-blue-300", glow: "bg-blue-300", ring: "ring-blue-500" }
+  // Fixed brand palette for the public site (independent of the admin dashboard's theme picker,
+  // so the landing page and login page always stay visually coordinated) — blue with a dark navy/black accent
+  const tc = { from: "from-blue-600", via: "via-blue-800", to: "to-slate-900", btnTo: "to-slate-900", bg500: "bg-blue-600", text: "text-blue-700", textLight: "text-blue-400", bg50: "bg-blue-50", bg100: "bg-blue-100", border: "border-blue-100", border200: "border-blue-200", shadow: "shadow-blue-400", glow: "bg-blue-400", ring: "ring-blue-600" }
 
   /* Tailwind safelist:
      selection:bg-blue-500 selection:bg-violet-500 selection:bg-emerald-500 selection:bg-rose-500 selection:bg-amber-500
@@ -158,7 +293,7 @@ export default function LandingHero() {
   }
 
   // Day names in Arabic (Sunday to Saturday)
-  const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"]
+  const dayNames = language === "ar" ? ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"] : dayNamesEn
 
   if (!mounted) return (
     <div className={`flex min-h-screen items-center justify-center ${isDark ? "bg-slate-900" : tc.bg50}`}>
@@ -174,7 +309,7 @@ export default function LandingHero() {
   )
 
   return (
-    <main className={`flex min-h-screen flex-col ${isDark ? "bg-slate-900" : tc.bg50} ${isDark ? "text-slate-300" : "text-slate-700"} overflow-x-hidden relative selection:${tc.bg500} selection:text-white`}>
+    <main dir={dir} className={`flex min-h-screen flex-col ${isDark ? "bg-slate-900" : tc.bg50} ${isDark ? "text-slate-300" : "text-slate-700"} overflow-x-hidden relative selection:${tc.bg500} selection:text-white`}>
 
       {/* ─── Soft Blue Background ─── */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -196,45 +331,54 @@ export default function LandingHero() {
             </div>
             <div>
               <span className={`block text-sm sm:text-base font-bold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>{schoolName}</span>
-              <span className={`hidden sm:block text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"} font-medium`}>الأساسية المختلطة</span>
+              <span className={`hidden sm:block text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"} font-medium`}>{ls.subLogo}</span>
             </div>
           </div>
 
           {/* Actions */}
-          {!isViaQR && (
-            <Link href="/login">
-              <Button className={`h-9 sm:h-10 bg-gradient-to-r ${tc.from} ${tc.btnTo} hover:${tc.from.replace("500", "600")} hover:${tc.btnTo.replace("600", "700")} text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg ${tc.shadow}/30 border-0 flex items-center gap-1.5 transition-all duration-300 hover:scale-105 active:scale-95`}>
-                <LogIn className="h-4 w-4" />
-                <span>دخول الإدارة</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setLanguage(language === "ar" ? "en" : "ar")}
+              className={`h-9 sm:h-10 px-3 rounded-xl text-xs sm:text-sm font-semibold border ${isDark ? "border-slate-700 bg-slate-900/60 text-slate-300 hover:bg-slate-800" : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"} transition-colors`}
+            >
+              {language === "ar" ? "English" : "العربية"}
+            </button>
+            {!isViaQR && (
+              <Button asChild className={`h-9 sm:h-10 bg-gradient-to-r ${tc.from} ${tc.btnTo} hover:${tc.from.replace("500", "600")} hover:${tc.btnTo.replace("600", "700")} text-white rounded-xl text-xs sm:text-sm font-semibold shadow-lg ${tc.shadow}/30 border-0 flex items-center gap-1.5 transition-all duration-300 hover:scale-105 active:scale-95`}>
+                <Link href="/login">
+                  <LogIn className="h-4 w-4" />
+                  <span>{ls.adminLogin}</span>
+                </Link>
               </Button>
-            </Link>
-          )}
+            )}
+          </div>
         </div>
       </header>
 
       {/* ─── Hero Section ─── */}
       <section className="relative z-10 px-4 pt-12 pb-14 sm:pt-20 sm:pb-22 text-center">
-        <div className="relative mx-auto max-w-3xl">
+        <div className="relative mx-auto max-w-3xl lg:max-w-5xl">
           {/* Badge */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
             className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs sm:text-sm font-semibold mb-6 border ${tc.border200} ${isDark ? "bg-slate-800" : tc.bg100} ${isDark ? tc.textLight : tc.text} backdrop-blur-md shadow-sm`}
           >
             <Sparkles className={`h-3.5 w-3.5 ${tc.textLight}`} />
-            <span>الموقع الرسمي للمدرسة</span>
+            <span>{ls.officialSite}</span>
             <Sparkles className={`h-3.5 w-3.5 ${tc.textLight}`} />
           </motion.div>
 
           {/* Heading */}
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className={`mb-4 text-3xl sm:text-5xl md:text-6xl font-black ${isDark ? "text-white" : "text-slate-900"} leading-tight tracking-tight`}
+            className={`mb-4 text-3xl sm:text-5xl md:text-6xl font-black ${isDark ? "text-white" : "text-slate-900"} leading-tight tracking-tight max-w-4xl mx-auto`}
           >
-            نحن نُشكّل الجيل القادم
+            {ls.heroTitle1}
             <br />
             <span className={`bg-gradient-to-r ${tc.from} ${tc.via} ${tc.to} bg-clip-text text-transparent`}>
               {schoolName}
@@ -242,26 +386,26 @@ export default function LandingHero() {
           </motion.h1>
 
           {/* Subtitle */}
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className={`mb-8 text-sm sm:text-base md:text-lg ${isDark ? "text-slate-400" : "text-slate-500"} max-w-xl mx-auto leading-relaxed`}
+            className={`mb-8 text-sm sm:text-base md:text-lg ${isDark ? "text-slate-400" : "text-slate-500"} max-w-xl lg:max-w-3xl mx-auto leading-relaxed`}
           >
-            مؤسسة تعليمية حكومية راسخة تسعى إلى بناء شخصية متكاملة لكل طالب، وتهيئة بيئة محفزة تجمع بين الأصالة والتقدم التكنولوجي في قلب كفر عقب.
+            {ls.heroDesc}
           </motion.p>
 
           {/* Stats Pills */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex flex-wrap items-center justify-center gap-2 sm:gap-3"
           >
             {[
-              { icon: <Users className={`h-4 w-4 ${tc.text}`} />, label: "9 صفوف دراسية" },
-              { icon: <BookOpen className={`h-4 w-4 ${tc.text}`} />, label: "7 مواد أساسية" },
-              { icon: <Award className={`h-4 w-4 ${tc.text}`} />, label: "بيئة ذكية متكاملة" },
+              { icon: <Users className={`h-4 w-4 ${tc.text}`} />, label: ls.stat1 },
+              { icon: <BookOpen className={`h-4 w-4 ${tc.text}`} />, label: ls.stat2 },
+              { icon: <Award className={`h-4 w-4 ${tc.text}`} />, label: ls.stat3 },
             ].map((stat, i) => (
               <div 
                 key={i} 
@@ -291,7 +435,7 @@ export default function LandingHero() {
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 font-semibold ${isDark ? "bg-slate-800 hover:bg-slate-700" : "bg-white hover:" + tc.bg50} border ${tc.border200} ${isDark ? tc.textLight : tc.text} transition-all duration-200 shadow-sm`}
               >
                 <GraduationCap className="h-4 w-4" />
-                الصفوف الدراسية
+                {ls.breadcrumbGrades}
               </button>
 
               {(view.type === "semesters" || view.type === "subjects" || view.type === "files") && (
@@ -317,14 +461,14 @@ export default function LandingHero() {
                   <ChevronLeft className="h-4 w-4 text-slate-400" />
                   {view.type === "subjects" ? (
                     <span className={`rounded-lg px-3 py-1.5 font-semibold ${isDark ? "bg-slate-800" : tc.bg50} border ${tc.border200} ${isDark ? tc.textLight : tc.text}`}>
-                      {view.semester === "first" ? "الفصل الأول" : "الفصل الثاني"}
+                      {view.semester === "first" ? ls.semesterFirst : ls.semesterSecond}
                     </span>
                   ) : (
                     <button
                       onClick={() => setView({ type: "subjects", gradeId: view.gradeId, gradeName: view.gradeName, semester: view.semester })}
                       className={`rounded-lg px-3 py-1.5 font-semibold ${isDark ? "bg-slate-800 hover:bg-slate-700" : "bg-white hover:" + tc.bg50} border ${tc.border200} ${isDark ? tc.textLight : tc.text} transition-all shadow-sm`}
                     >
-                      {view.semester === "first" ? "الفصل الأول" : "الفصل الثاني"}
+                      {view.semester === "first" ? ls.semesterFirst : ls.semesterSecond}
                     </button>
                   )}
                 </>
@@ -358,22 +502,15 @@ export default function LandingHero() {
                 <div className="text-center">
                   <div className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold mb-4 border ${tc.border200} ${isDark ? "bg-slate-800" : tc.bg100} ${isDark ? tc.textLight : tc.text}`}>
                     <Star className="h-3.5 w-3.5" />
-                    <span>مميزاتنا</span>
+                    <span>{ls.featuresLabel}</span>
                   </div>
-                  <h2 className={`text-2xl sm:text-3xl font-extrabold ${isDark ? "text-white" : "text-slate-900"} mb-2`}>{`لماذا ${schoolName}؟`}</h2>
-                  <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"} max-w-md mx-auto`}>نوفر بيئة تعليمية متكاملة تجمع بين التقنية الحديثة والتعليم الأصيل</p>
+                  <h2 className={`text-2xl sm:text-3xl font-extrabold ${isDark ? "text-white" : "text-slate-900"} mb-2`}>{ls.whyUs(schoolName)}</h2>
+                  <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"} max-w-md mx-auto`}>{ls.whyUsDesc}</p>
                 </div>
 
                 {/* Features Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-                  {[
-                    { emoji: "📚", title: "مناهج متكاملة", desc: "محتوى تعليمي شامل من الصف الأول حتى التاسع وفق المناهج الوطنية المعتمدة", gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, border: tc.border, glow: `hover:${tc.shadow}/15` },
-                    { emoji: "📅", title: "جداول دراسية منظمة", desc: "جداول حصص أسبوعية دقيقة ومحدّثة لكل صف دراسي بشكل مستمر", gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, border: tc.border, glow: `hover:${tc.shadow}/15` },
-                    { emoji: "👨‍🏫", title: "كادر تعليمي متميز", desc: "معلمون مؤهلون ومتخصصون في تقديم التعليم الحديث وتنمية مهارات الطلاب", gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, border: tc.border, glow: `hover:${tc.shadow}/15` },
-                    { emoji: "📁", title: "مكتبة رقمية", desc: "ملفات دراسية ومقررات وأوراق عمل متاحة لكل طالب في أي وقت ومكان", gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, border: tc.border, glow: `hover:${tc.shadow}/15` },
-                    { emoji: "🏆", title: "بيئة آمنة ومحفزة", desc: "بيئة مدرسية تدعم النمو الأكاديمي والاجتماعي لكل طالب بشكل فردي", gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, border: tc.border, glow: `hover:${tc.shadow}/15` },
-                    { emoji: "🔗", title: "تواصل مستمر", desc: "نظام متكامل لمتابعة تقدم الطلاب وتواصل أولياء الأمور مع الكادر التعليمي", gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, border: tc.border, glow: `hover:${tc.shadow}/15` },
-                  ].map((feat, i) => (
+                  {ls.features.map((feat, i) => ({ ...feat, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, border: tc.border, glow: `hover:${tc.shadow}/15` })).map((feat, i) => (
                     <motion.div
                       key={i}
                       variants={itemVariants}
@@ -395,19 +532,19 @@ export default function LandingHero() {
                       <QrCode className="h-6 w-6 text-white" />
                     </div>
                     <div className="text-center sm:text-right flex-1">
-                      <h3 className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"} mb-0.5`}>تصفح المواد الدراسية</h3>
-                      <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>اختر صفك الدراسي للاطلاع على المقررات والجداول والملفات</p>
+                      <h3 className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"} mb-0.5`}>{ls.browseSubjects}</h3>
+                      <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"}`}>{ls.browseSubjectsDesc}</p>
                     </div>
                     <button
                       onClick={() => {
-                        const targetId = lastGradeId || grades[0].id
-                        const targetGrade = grades.find(g => g.id === targetId) || grades[0]
+                        const targetId = lastGradeId || gradesT[0].id
+                        const targetGrade = gradesT.find(g => g.id === targetId) || gradesT[0]
                         setView({ type: "semesters", gradeId: targetGrade.id, gradeName: targetGrade.name })
                         setLastGradeId(targetGrade.id)
                       }}
                       className={`flex-shrink-0 px-4 py-2 rounded-xl ${tc.bg500} hover:${tc.bg500.replace("500", "400")} text-white text-xs font-bold transition-all duration-200 hover:scale-105 active:scale-95 shadow-md ${tc.shadow}/30`}
                     >
-                      ابدأ الآن
+                      {ls.startNow}
                     </button>
                   </div>
                 </div>
@@ -429,27 +566,27 @@ export default function LandingHero() {
                     <span>🎓</span>
                     <span>{view.gradeName}</span>
                   </div>
-                  <h2 className={`text-2xl sm:text-3xl font-black ${isDark ? "text-white" : "text-slate-900"} mb-2`}>اختر الفصل الدراسي</h2>
-                  <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>تصفح المواد الدراسية والجداول المخصصة لكل فصل</p>
+                  <h2 className={`text-2xl sm:text-3xl font-black ${isDark ? "text-white" : "text-slate-900"} mb-2`}>{ls.chooseSemester}</h2>
+                  <p className={`text-sm ${isDark ? "text-slate-400" : "text-slate-500"}`}>{ls.chooseSemesterDesc}</p>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   {[
                     {
                       key: "first",
-                      label: "الفصل الدراسي الأول",
+                      label: ls.semesterFullFirst,
                       emoji: "🍂",
-                      period: "سبتمبر - يناير",
+                      period: ls.semFirstPeriod,
                       gradient: "from-orange-500 to-amber-500",
-                      features: ["مناهج الفصل الأول", "جدول الحصص الأسبوعي", "ملخصات دراسية شاملة"],
+                      features: ls.semFirstFeatures,
                     },
                     {
                       key: "second",
-                      label: "الفصل الدراسي الثاني",
+                      label: ls.semesterFullSecond,
                       emoji: "🌸",
-                      period: "فبراير - يونيو",
+                      period: ls.semSecondPeriod,
                       gradient: "from-emerald-500 to-teal-500",
-                      features: ["مناهج الفصل الثاني", "تحديثات الجدول المدرسي", "أوراق عمل ومراجعات نهائية"],
+                      features: ls.semSecondFeatures,
                     },
                   ].map((sem) => (
                     <button
@@ -479,7 +616,7 @@ export default function LandingHero() {
                           </div>
                         </div>
                         <div className={`flex items-center gap-1.5 text-xs font-semibold ${isDark ? tc.textLight : tc.text} group-hover:${tc.textLight}`}>
-                          <span>عرض المواد والجدول</span>
+                          <span>{ls.viewSubjectsSchedule}</span>
                           <ChevronLeft className="h-3.5 w-3.5 group-hover:-translate-x-1 transition-transform" />
                         </div>
                       </div>
@@ -507,9 +644,9 @@ export default function LandingHero() {
                     </div>
                     <div>
                       <h3 className={`font-bold ${isDark ? "text-white" : "text-slate-900"} text-sm sm:text-base`}>
-                        جدول الحصص الأسبوعي ({view.gradeName})
+                        {ls.weeklySchedule(view.gradeName)}
                       </h3>
-                      <p className={`text-[11px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>الفصل الدراسي {view.semester === "first" ? "الأول" : "الثاني"}</p>
+                      <p className={`text-[11px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>{view.semester === "first" ? ls.semesterFullFirst : ls.semesterFullSecond}</p>
                     </div>
                   </div>
 
@@ -538,7 +675,7 @@ export default function LandingHero() {
                         return (
                           <div className="text-center py-8">
                             <Calendar className="h-10 w-10 mx-auto mb-2 text-slate-400" />
-                            <p className="text-xs text-slate-500">لا يوجد صف دراسي معرّف حالياً لهذا المستوى</p>
+                            <p className="text-xs text-slate-500">{ls.noGradeDefined}</p>
                           </div>
                         )
                       }
@@ -551,7 +688,7 @@ export default function LandingHero() {
                         return (
                           <div className="text-center py-8">
                             <Clock className="h-10 w-10 mx-auto mb-2 text-slate-400" />
-                            <p className="text-xs text-slate-500">لم يتم إدخال جدول الحصص لهذا الفصل بعد</p>
+                            <p className="text-xs text-slate-500">{ls.noScheduleYet}</p>
                           </div>
                         )
                       }
@@ -562,7 +699,7 @@ export default function LandingHero() {
                           <div className="hidden sm:block min-w-[750px]">
                             <div className="grid grid-cols-9 gap-2 mb-2">
                               <div className={`text-center py-2 rounded-xl text-xs font-bold ${isDark ? "bg-slate-700 border-slate-600 text-slate-300" : "bg-slate-100 border-slate-200 text-slate-600"}`}>
-                                اليوم / الحصة
+                                {ls.dayPeriod}
                               </div>
                               {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                                 <div key={n} className={`text-center py-2 rounded-xl text-xs font-bold ${isDark ? "bg-slate-700 border-slate-600 text-slate-300" : "bg-slate-100 border-slate-200 text-slate-600"}`}>
@@ -608,7 +745,7 @@ export default function LandingHero() {
                                 <div key={dayIndex} className={`rounded-xl overflow-hidden border ${tc.border} ${isDark ? "bg-slate-800" : "bg-white"} shadow-sm`}>
                                   <div className={`px-3 py-2 flex items-center justify-between ${isToday ? `bg-gradient-to-r ${tc.from} ${tc.via.replace("via-", "to-")} text-white` : `${isDark ? "bg-slate-800 border-b border-slate-700" : "bg-blue-50 border-b border-blue-50"} ${isDark ? "text-slate-400" : "text-slate-500"}`}`}>
                                     <div className="font-bold text-xs">{dayNames[dayIndex]}</div>
-                                    <div className="text-[10px] opacity-80">{dayLessons} حصص</div>
+                                    <div className="text-[10px] opacity-80">{ls.lessonsCount(dayLessons)}</div>
                                   </div>
                                   <div className="p-2 space-y-1.5">
                                     {[1, 2, 3, 4, 5, 6, 7, 8].map((periodNum) => {
@@ -642,13 +779,13 @@ export default function LandingHero() {
                   <div className="text-center">
                     <div className={`inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-semibold mb-2 border ${tc.border200} ${isDark ? "bg-slate-800" : tc.bg100} ${isDark ? tc.textLight : tc.text}`}>
                       <BookOpen className="h-3.5 w-3.5" />
-                      <span>المواد التعليمية</span>
+                      <span>{ls.educationalSubjects}</span>
                     </div>
-                    <h3 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>مواد {view.gradeName}</h3>
+                    <h3 className={`text-xl font-bold ${isDark ? "text-white" : "text-slate-900"}`}>{ls.subjectsOf(view.gradeName)}</h3>
                   </div>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {subjects.map((subj) => (
+                    {subjectsT.map((subj) => (
                       <button
                         key={subj.name}
                         onClick={() => setView({ type: "files", gradeId: view.gradeId, gradeName: view.gradeName, semester: view.semester, subject: subj.name, subjectColor: subj.color })}
@@ -666,7 +803,7 @@ export default function LandingHero() {
                             <p className={`text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>{subj.desc}</p>
                           </div>
                           <div className={`flex items-center gap-1 text-[10px] ${isDark ? tc.textLight : tc.text}`}>
-                            <span>تصفح الملفات</span>
+                            <span>{ls.browseFiles}</span>
                             <ChevronLeft className="h-3.5 w-3.5 group-hover:-translate-x-0.5 transition-transform" />
                           </div>
                         </div>
@@ -690,14 +827,14 @@ export default function LandingHero() {
                 {/* Header */}
                 <div className={`flex items-center gap-4 rounded-2xl p-5 border ${tc.border} ${isDark ? "bg-slate-800" : "bg-white"} shadow-sm`}>
                   <div className={`flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${view.subjectColor} text-3xl shadow-md`}>
-                    {subjects.find((s) => s.name === view.subject)?.emoji || "📚"}
+                    {subjectsT.find((s) => s.name === view.subject)?.emoji || "📚"}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h2 className={`text-lg sm:text-xl font-bold ${isDark ? "text-white" : "text-slate-900"} mb-1.5`}>{view.subject}</h2>
                     <div className="flex flex-wrap gap-2 text-xs">
                       <span className={`rounded-md px-2 py-0.5 ${isDark ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-600"} border ${isDark ? "border-slate-600" : "border-slate-200"}`}>{view.gradeName}</span>
                       <span className={`rounded-md px-2 py-0.5 ${isDark ? "bg-slate-700 text-slate-300" : "bg-slate-100 text-slate-600"} border ${isDark ? "border-slate-600" : "border-slate-200"}`}>
-                        الفصل {view.semester === "first" ? "الأول" : "الثاني"}
+                        {ls.semesterShort(view.semester === "first" ? ls.semesterFirst : ls.semesterSecond)}
                       </span>
                     </div>
                   </div>
@@ -706,16 +843,16 @@ export default function LandingHero() {
                 {files.length === 0 ? (
                   <div className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed ${isDark ? "border-slate-700" : "border-slate-200"} py-16 px-6 text-center ${isDark ? "bg-slate-800" : "bg-white"}`}>
                     <span className="text-4xl mb-4">📂</span>
-                    <h3 className={`text-sm sm:text-base font-bold ${isDark ? "text-white" : "text-slate-900"} mb-1`}>لا توجد ملفات حالياً</h3>
+                    <h3 className={`text-sm sm:text-base font-bold ${isDark ? "text-white" : "text-slate-900"} mb-1`}>{ls.noFiles}</h3>
                     <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"} max-w-xs leading-relaxed`}>
-                      لم يقم معلم المادة برفع أي أوراق عمل أو ملفات لهذا الفصل بعد. سيتم توفيرها قريباً.
+                      {ls.noFilesDesc}
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <span className={`font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>الملفات والمرفقات ({files.length})</span>
-                      <span className={`${isDark ? "text-slate-400" : "text-slate-500"}`}>انقر على الملف لتحميله أو فتحه</span>
+                      <span className={`font-semibold ${isDark ? "text-slate-300" : "text-slate-700"}`}>{ls.filesAndAttachments(files.length)}</span>
+                      <span className={`${isDark ? "text-slate-400" : "text-slate-500"}`}>{ls.clickToDownload}</span>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -767,18 +904,18 @@ export default function LandingHero() {
           <div className="text-center mb-8">
             <div className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold mb-3 border ${tc.border200} ${isDark ? "bg-slate-800" : tc.bg100} ${isDark ? tc.textLight : tc.text}`}>
               <Shield className="h-3.5 w-3.5" />
-              <span>معلومات المدرسة</span>
+              <span>{ls.schoolInfo}</span>
             </div>
             <h2 className={`text-xl sm:text-2xl font-extrabold ${isDark ? "text-white" : "text-slate-900"}`}>{schoolName}</h2>
-            <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"} mt-1`}>مؤسسة تعليمية حكومية تخدم أبناء المنطقة منذ سنوات</p>
+            <p className={`text-xs ${isDark ? "text-slate-400" : "text-slate-500"} mt-1`}>{ls.schoolInfoDesc}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {[
-              { icon: <MapPin className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, title: "الموقع", value: "كفر عقب — القدس", sub: "الضفة الغربية" },
-              { icon: <Phone className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, title: "للتواصل", value: "02-234-5678", sub: "أوقات الدوام", ltr: true },
-              { icon: <Users className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, title: "المراحل الدراسية", value: "الصف الأول — التاسع", sub: "9 صفوف دراسية" },
-              { icon: <Calendar className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, title: "الدوام المدرسي", value: "الأحد — الخميس", sub: "08:00 صباحاً — 02:00 م" },
-            ].map((card, i) => (
+            {([
+              { icon: <MapPin className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, ...ls.infoCards[0], ltr: false },
+              { icon: <Phone className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, ...ls.infoCards[1], ltr: true },
+              { icon: <Users className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, ...ls.infoCards[2], ltr: false },
+              { icon: <Calendar className="h-4 w-4 text-white" />, gradient: `${tc.from} ${tc.via.replace("via-", "to-")}`, ...ls.infoCards[3], ltr: false },
+            ] as Array<{ icon: React.ReactElement; gradient: string; title: string; value: string; sub: string; ltr: boolean }>).map((card, i) => (
               <div
                 key={i}
                 className={`rounded-2xl p-4 border ${tc.border} ${isDark ? "bg-slate-800" : "bg-white"} shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:${tc.border200} hover:shadow-md`}
@@ -805,11 +942,11 @@ export default function LandingHero() {
             <span className={`text-sm font-bold ${isDark ? "text-white" : "text-slate-900"}`}>{schoolName}</span>
           </div>
           <p className={`text-[10px] ${isDark ? "text-slate-400" : "text-slate-500"}`}>
-            {`جميع الحقوق محفوظة © 2026 — ${schoolName}`}
+            {ls.footerRights(schoolName)}
           </p>
           <div className={`mt-2.5 flex items-center justify-center gap-1 text-[10px] ${isDark ? "text-slate-500" : "text-slate-400"}`}>
             <Sparkles className="h-3 w-3" />
-            <span>نظام الإدارة والتعليم الذكي</span>
+            <span>{ls.footerTagline}</span>
             <Sparkles className="h-3 w-3" />
           </div>
         </div>
