@@ -18,8 +18,7 @@ A full-stack school management platform for **Kafr Aqab Mixed Basic School** —
 
 | | URL |
 |---|---|
-| 🌐 Website (Frontend) | https://kafraqab-school.vercel.app |
-| 🔌 API (Backend) | https://scool-backend.vercel.app |
+| 🌐 Website | https://kafraqab-school.vercel.app |
 
 Pushing to `main` auto-deploys both projects via Vercel's GitHub integration.
 
